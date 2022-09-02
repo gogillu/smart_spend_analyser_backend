@@ -6,7 +6,8 @@ var mongo = require('mongodb');
 const bankServer = process.env.BANK_SERVER
 const fetchEndpoint = process.env.FETCH_ENDPOINT
 
-const categorizer = require('../categorize/categorise_intell')
+const categorizerRemark = require('../categorize/categorise_intell')
+const categorizerToAcc = require('../categorize/categorise_toAcc')
 
 const Axios = require('Axios');
 
@@ -80,12 +81,23 @@ async function updateLocalTransactions(userId, bankId, indexedLocalTnx, fetchedT
                 "to": tnx.to
             }
 
-            let data = await categorizer.getCategoryId(tnxCpy.remark)
-            if(data[0]){
+            // try to categorize based on toAccount
+            let dataToAcc = await categorizerToAcc.getCategoryIdBasedOnToAcc(tnx.to)
+            if(dataToAcc[0]){
+                
                 tnxCpy["categorized"]= [{
                     "amount": tnx.amount,
-                    "categoryId": data[1]
+                    "categoryId": dataToAcc[1]
                 }]
+            }else{
+                // try to categorize based on remark
+                let dataRemark = await categorizerRemark.getCategoryIdBasedOnRemark(tnxCpy.remark)
+                if(dataRemark[0]){
+                    tnxCpy["categorized"]= [{
+                        "amount": tnx.amount,
+                        "categoryId": dataRemark[1]
+                    }]
+                }
             }
 
             newTnx.push(tnxCpy)
@@ -141,7 +153,7 @@ router.get('/getTnx',async function(req, res){
 });
 
 router.get('/testCategorizeFromRemark',async function(req, res){
-    let data = await categorizer.getCategoryId("shirt")
+    let data = await categorizerRemark.getCategoryIdBasedOnRemark("shirt")
     res.send(JSON.stringify(data));
 });
 

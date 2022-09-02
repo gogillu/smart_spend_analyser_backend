@@ -15,7 +15,7 @@ StandardCatMap = {
     "supermarket": "groceries"
 }
 
-async function getCategoryId(remark){
+async function getCategoryIdBasedOnRemark(remark){
 
     categorized = false
     categorizedString = "none"
@@ -48,4 +48,4 @@ async function getCategoryId(remark){
     return [false,0]
 };
 
-module.exports.getCategoryId = getCategoryId
+module.exports.getCategoryIdBasedOnRemark = getCategoryIdBasedOnRemark
