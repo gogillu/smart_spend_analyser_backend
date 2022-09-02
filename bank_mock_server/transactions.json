@@ -1,6 +1,6 @@
 [
     {
-        "tnx_id": 1,
+        "tnx_id": 11,
         "user_id":"abc",
         "timestamp": "2022-09-02T10:00:00",
         "amount": 100.5,
@@ -11,6 +11,16 @@
     },
     {
         "tnx_id": 2,
+        "user_id":"abc",
+        "timestamp": "2022-09-01T11:00:00",
+        "amount": 20000,
+        "tnx_type": "debit",
+        "method": "UPI",
+        "remark": "Rent",
+        "to": "9999999"
+    },
+    {
+        "tnx_id": 3,
         "user_id":"abc2",
         "timestamp": "2022-09-02T10:00:00",
         "amount": 200.5,
@@ -20,7 +30,7 @@
         "to": "893475934785895"
     },
     {
-        "tnx_id": 3,
+        "tnx_id": 4,
         "user_id":"abc2",
         "timestamp": "2022-09-02T10:00:00",
         "amount": 500,
