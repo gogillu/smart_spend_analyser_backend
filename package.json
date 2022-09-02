@@ -17,7 +17,11 @@
   },
   "homepage": "https://github.com/gogillu/smart_spend_analyser_backend#readme",
   "dependencies": {
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.2",
     "express": "^4.18.1",
+    "mongo-mock": "^4.1.0",
+    "mongodb": "^4.9.1",
     "nodemon": "^2.0.19"
   }
 }
