@@ -6,6 +6,8 @@ var mongo = require('mongodb');
 const bankServer = process.env.BANK_SERVER
 const fetchEndpoint = process.env.FETCH_ENDPOINT
 
+const categorizer = require('../categorize/categorise_intell')
+
 const Axios = require('Axios');
 
 function getBankEndpoint(bankId){
@@ -108,23 +110,6 @@ router.post('/fetchAndUpdateLocal',async function(req, res){
     res.send(JSON.stringify(resp))
 });        
 
-// router.get('/test',async function(req, res){
-//     db = await conn()
-//     response = await db.collection('transactions').insertOne(
-//         {
-//             "userId":1,
-//             "bankUserId":"A123",
-//             "bankId":1,
-//             "tnxId": 11111,
-//             "timestamp": new Date("2022-09-02 10:00:00"),
-//             "amount": 100.5,
-//             "tnxType": "debit",
-//             "method": "UPI",
-//             "remark": "Lunch at udupi",
-//             "to": "893475934785894"
-//         }).toArray()
-//     res.send(JSON.stringify(response));
-// });
 
 router.get('/getTnx',async function(req, res){
     db = await conn()
@@ -142,6 +127,12 @@ router.get('/getTnx',async function(req, res){
     res.send(JSON.stringify(localTnx));
 });
 
+router.get('/testCategorizeFromRemark',async function(req, res){
+    let data = await categorizer.getCategoryId("shirt")
+    res.send(JSON.stringify(data));
+});
+
+
 // router.post('/banklink',async function(req, res){
 //     // custom logic to prevent duplicate entries
 //     db = await conn()
@@ -150,3 +141,21 @@ router.get('/getTnx',async function(req, res){
 // });
 
 module.exports = router
+
+// router.get('/test',async function(req, res){
+//     db = await conn()
+//     response = await db.collection('transactions').insertOne(
+//         {
+//             "userId":1,
+//             "bankUserId":"A123",
+//             "bankId":1,
+//             "tnxId": 11111,
+//             "timestamp": new Date("2022-09-02 10:00:00"),
+//             "amount": 100.5,
+//             "tnxType": "debit",
+//             "method": "UPI",
+//             "remark": "Lunch at udupi",
+//             "to": "893475934785894"
+//         }).toArray()
+//     res.send(JSON.stringify(response));
+// });
