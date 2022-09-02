@@ -14,6 +14,9 @@ app.use('/bank',bank)
 const ssaCategory = require('./smart_spend_analyser')
 app.use('/ssa',ssaCategory)
 
+const ui = require('./ui')
+app.use('/ui',ui)
+
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
