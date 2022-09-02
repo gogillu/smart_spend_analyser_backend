@@ -1,0 +1,23 @@
+{
+  "name": "smart_spend_analyser_backend",
+  "version": "1.0.0",
+  "description": "Smart Spend Analyser",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gogillu/smart_spend_analyser_backend.git"
+  },
+  "author": "gogillu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gogillu/smart_spend_analyser_backend/issues"
+  },
+  "homepage": "https://github.com/gogillu/smart_spend_analyser_backend#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "nodemon": "^2.0.19"
+  }
+}

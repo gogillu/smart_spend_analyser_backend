@@ -1,0 +1,28 @@
+[
+    {
+        "user_id":"abc",
+        "timestamp": "2022-09-02T10:00:00",
+        "amount": 100.5,
+        "tnx_type": "debit",
+        "method": "UPI",
+        "remark": "Lunch at udupi",
+        "to": "893475934785894"
+    },
+    {
+        "user_id":"abc2",
+        "timestamp": "2022-09-02T10:00:00",
+        "amount": 200.5,
+        "tnx_type": "debit",
+        "method": "UPI",
+        "remark": "Auto a to b",
+        "to": "893475934785895"
+    },
+    {
+        "user_id":"abc2",
+        "timestamp": "2022-09-02T10:00:00",
+        "amount": 500,
+        "tnx_type": "debit",
+        "method": "UPI",
+        "to": "893475934785895"
+    }
+]
