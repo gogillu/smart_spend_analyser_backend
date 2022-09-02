@@ -10,6 +10,26 @@
         "to": "893475934785894"
     },
     {
+        "tnx_id": 12,
+        "user_id":"abc",
+        "timestamp": "2022-09-02T10:00:00",
+        "amount": 100.5,
+        "tnx_type": "debit",
+        "method": "UPI",
+        "remark": "dinner at Kapoor Cafe",
+        "to": "893475934785894"
+    },
+    {
+        "tnx_id": 13,
+        "user_id":"abc",
+        "timestamp": "2022-09-02T10:00:00",
+        "amount": 700,
+        "tnx_type": "debit",
+        "method": "UPI",
+        "remark": "swiggy supermarket",
+        "to": "acc-swiggy-1234-1234"
+    },
+    {
         "tnx_id": 2,
         "user_id":"abc",
         "timestamp": "2022-09-01T11:00:00",

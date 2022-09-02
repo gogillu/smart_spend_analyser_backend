@@ -61,11 +61,13 @@ async function getLocalTransactions(userId,bankUserId,bankId,from,to){
 async function updateLocalTransactions(userId, bankId, indexedLocalTnx, fetchedTnx){
     newTnx = []
 
-    fetchedTnx.forEach(tnx => {
+    for(var i in fetchedTnx){
+        tnx = fetchedTnx[i]
+    // fetchedTnx.forEach(tnx => {
         let isNew = !indexedLocalTnx[tnx.tnx_id]
         console.log('isNew',isNew)
         if(isNew){
-            newTnx.push({
+            tnxCpy = {
                 "userId":userId,
                 "bankUserId":tnx.user_id,
                 "bankId":bankId,
@@ -76,16 +78,27 @@ async function updateLocalTransactions(userId, bankId, indexedLocalTnx, fetchedT
                 "method": tnx.method,
                 "remark": tnx.remark,
                 "to": tnx.to
-            })
+            }
+
+            let data = await categorizer.getCategoryId(tnxCpy.remark)
+            if(data[0]){
+                tnxCpy["categorized"]= [{
+                    "amount": tnx.amount,
+                    "categoryId": data[1]
+                }]
+            }
+
+            newTnx.push(tnxCpy)
         }
-    });
+    // });
+    }
 
     let response = []
     if(newTnx.length > 0){
         db = await conn()
         console.log(newTnx)
         // return newTnx
-        response = await db.collection('transactions').insertMany(newTnx)    
+        response = await db.collection('transactions').insertMany(newTnx)   
     }
 
     return response
