@@ -15,8 +15,13 @@ router.get('/category',async function(req, res){
 router.post('/category',async function(req, res){
     console.log("category api is hit")
 
+    let userId = 1
+    let category = req.body.category
+    let toType = req.body.toType || false
+    let toVal = req.body.toVal || "NA"
+
     db = await conn()
-    response = await db.collection('categories').insertOne({"userId":1,"category":req.body.category})
+    response = await db.collection('categories').insertOne({"userId":userId,"category":category,"toType":toType,"toVal":toVal})
     res.send(JSON.stringify(response));
 });
 
