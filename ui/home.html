@@ -76,7 +76,7 @@
       <h3>Menu 1</h3>
       <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
     </div>
-    <div id="menu2" class="tab-pane fade">
+    <div id="menu2" class="tab-pane fade in active">
       <h3>Fetch Transactions From Bank Account</h3>
       <!-- <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p> -->
       <br/><br/>
@@ -84,15 +84,15 @@
       <div class="row">
       <div class="col-sm-3">
         <span class=""col-sm-1 >From</span>
-        <input type="date" id="from" class="form-control col-sm-2"/>
+        <input type="date" id="from" class="form-control col-sm-2" value="2022-08-15" required/>
       </div>
       <div class="col-sm-3">
         <span class=""col-sm-1 >To</span>
-        <input type="date" id="To" class="form-control col-sm-2"/>
+        <input type="date" id="to" class="form-control col-sm-2" value="2022-09-03" required/>
       </div>
       <div class="col-sm-3">
         <br/>
-        <input type="button" id="fetch" value="Fetch Transactions" class="btn btn-primary "/>
+        <input type="button" id="fetch" value="Fetch Transactions" class="btn btn-primary " onclick=""/>
       </div>
       <div class="col-sm-3">
         .
@@ -104,30 +104,97 @@
       <table class="table table-bordered">
         <thead>
           <tr>
-            <th scope="col">Select Day</th>
-            <th scope="col">Article Name</th>
-            <th scope="col">Author</th>
-            <th scope="col">Words</th>
-            <th scope="col">Shares</th>
+            <th scope="col">Select</th>
+            <th scope="col">Timestamp</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Transaction with</th>
+            <th scope="col">Type</th>
+            <th scope="col">Remark</th>
+            <th scope="col">Categorize</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="tnx">
           <tr>
-            <td scope="col">Select Day</td>
+            <td>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input large" id="customCheck3">
+              </div>
+            </td>
+
             <td scope="col">Article Name</td>
             <td scope="col">Author</td>
             <td scope="col">Words</td>
             <td scope="col">Shares</td>
           </tr>
         </tbody>
+        </table>
+    </div>
 
       <script>
+        $("#fetch").click(function(){
+          // console.log($("#from").val()+"T00:00:00")
+          var from = $("#from").val()+"T00:00:00"
+          var to = $("#to").val()+"T23:59:59"
+          console.log(from,to)
 
+          $.ajax({
+            url: "http://localhost:3000/ssa/fetchAndUpdateLocal", 
+            type: "POST",
+            data:{
+              from:from,
+              to:to
+            },
+            success: function(result){
+              console.log(result);
+
+              $.ajax({
+                url: "http://localhost:3000/ssa/getTnx",
+                type: "GET",
+                data:{
+                  
+                },
+                success: function(ress){
+                  console.log(ress)
+                  updateTable(ress)
+                }
+              })
+
+            }
+          });
+        });
+
+      function updateTable(data){
+        $("#tnx").html('')
+        var jd = JSON.parse(data)
+        console.log(jd.length)
+
+        for(var i in jd){
+          console.log(jd[i].amount)
+          content = `
+          <tr>
+            <td>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input large" id="customCheck3">
+              </div>
+            </td>
+
+            <td scope="col">${jd[i].timestamp}</td>
+            <td scope="col">${jd[i].amount}</td>
+            <td scope="col">${jd[i].to}</td>
+            <td scope="col">${jd[i].tnxType}</td>
+            <td scope="col">${jd[i].remark}</td>
+            <td scope="col">cat</td>
+          </tr>
+          `
+          
+          $("#tnx").append(content)
+        }
+      }
       </script>
 
     </div>
 
-    <div id="menu3" class="tab-pane fade in active">
+    <div id="menu3" class="tab-pane fade">
       <h3>Menu 3</h3>
       <p>Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
     

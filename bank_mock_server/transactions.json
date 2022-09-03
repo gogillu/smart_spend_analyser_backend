@@ -1,5 +1,25 @@
 [
     {
+        "tnx_id": 111,
+        "user_id":"abc",
+        "timestamp": "2022-09-02T10:00:00",
+        "amount": 100.5,
+        "tnx_type": "debit",
+        "method": "UPI",
+        "remark": "Lunch at udupi",
+        "to": "893475934785894"
+    },
+    {
+        "tnx_id": 121,
+        "user_id":"abc",
+        "timestamp": "2022-09-02T10:00:00",
+        "amount": 100.5,
+        "tnx_type": "debit",
+        "method": "UPI",
+        "remark": "dinner at Kapoor Cafe",
+        "to": "893475934785894"
+    },
+    {
         "tnx_id": 11,
         "user_id":"abc",
         "timestamp": "2022-09-02T10:00:00",
