@@ -131,45 +131,73 @@
     </div>
 
       <script>
-        $("#fetch").click(function(){
+        $("#fetch").click(async function(){
           // console.log($("#from").val()+"T00:00:00")
           var from = $("#from").val()+"T00:00:00"
           var to = $("#to").val()+"T23:59:59"
           console.log(from,to)
 
-          $.ajax({
+          //Get all categories
+          var categories = await $.ajax({
+            url: "http://localhost:3000/ssa/category", 
+            type: "GET"
+          })
+
+          console.log('Cat',categories)
+
+          // ---------------- Index Categories
+
+          var iCat = {}
+          JSON.parse(categories).forEach(cat => {
+            iCat[cat._id] = cat
+          });
+
+          console.log("iCat",iCat)
+
+          // ------------------------------
+
+          var fetchAndUpdateLocal = await $.ajax({
             url: "http://localhost:3000/ssa/fetchAndUpdateLocal", 
             type: "POST",
             data:{
               from:from,
               to:to
-            },
-            success: function(result){
-              console.log(result);
-
-              $.ajax({
-                url: "http://localhost:3000/ssa/getTnx",
-                type: "GET",
-                data:{
-                  
-                },
-                success: function(ress){
-                  console.log(ress)
-                  updateTable(ress)
-                }
-              })
-
             }
-          });
+          })
+
+          console.log('D',fetchAndUpdateLocal)
+
+          var getTnx = await $.ajax({
+              url: "http://localhost:3000/ssa/getTnx",
+              type: "GET",
+              data:{
+                
+              },
+            })
+
+          console.log('DD',getTnx)
+          updateTable(getTnx,iCat)
+
         });
 
-      function updateTable(data){
+      function updateTable(data,iCat){
         $("#tnx").html('')
         var jd = JSON.parse(data)
         console.log(jd.length)
 
         for(var i in jd){
           console.log(jd[i].amount)
+
+          category = "-"
+          if(jd[i].categorized){
+            if(jd[i].categorized.length == 1){
+              console.log("*",jd[i].categorized[0].categoryId)
+              if(iCat[jd[i].categorized[0].categoryId]){
+                category = iCat[jd[i].categorized[0].categoryId].category
+              }
+            }
+          }
+
           content = `
           <tr>
             <td>
@@ -178,18 +206,33 @@
               </div>
             </td>
 
-            <td scope="col">${jd[i].timestamp}</td>
+            <td scope="col">${frameDate(jd[i].timestamp)}</td>
             <td scope="col">${jd[i].amount}</td>
             <td scope="col">${jd[i].to}</td>
             <td scope="col">${jd[i].tnxType}</td>
             <td scope="col">${jd[i].remark}</td>
-            <td scope="col">cat</td>
+            <td scope="col">${category}</td>
           </tr>
           `
           
           $("#tnx").append(content)
         }
       }
+
+      function frameDate(d){
+        var date = new Date(d)
+        var z = n(date.getDate())+
+          "-"+n(date.getMonth()+1)+
+          "-"+date.getFullYear()+
+          " "+n(date.getHours())+
+          ":"+n(date.getMinutes())
+        return z;
+      }
+
+      function n(n){
+         return n > 9 ? "" + n: "0" + n;
+      }
+
       </script>
 
     </div>
