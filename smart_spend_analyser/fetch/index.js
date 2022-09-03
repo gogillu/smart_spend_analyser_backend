@@ -137,17 +137,20 @@ router.post('/fetchAndUpdateLocal',async function(req, res){
 
 
 router.get('/getTnx',async function(req, res){
+    const from = req.query.from
+    const to = req.query.to
+
     db = await conn()
     localTnx = await db.collection('transactions').find(
-        // {
+        {
         //     "userId":1,
         //     "bankUserId":"A123",
         //     "bankId":1,
-        //     "timestamp": {
-        //         $gt:new Date("2022-09-02 09:00:00"),
-        //         $lt:new Date("2022-09-02 10:00:01")
-        //     },
-        // }
+            "timestamp": {
+                $gt:new Date(from),
+                $lt:new Date(to)
+            },
+        }
     ).toArray()
     res.send(JSON.stringify(localTnx));
 });
