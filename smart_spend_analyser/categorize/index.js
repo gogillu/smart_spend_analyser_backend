@@ -18,8 +18,12 @@ const conn = require('../db/connect');
 ]
 */
 router.post('/categorize',async function(req, res){
+    console.log(req.body)
     let inputs = req.body.categorizeInput
-    console.log(JSON.stringify(inputs))
+    // let x = JSON.parse(req.body)
+    // console.log(',,',x,x.categorizeInput)
+    console.log(req.body,'body')
+    console.log(JSON.stringify(inputs),'string categorizeInput')
 
     let track = []
 

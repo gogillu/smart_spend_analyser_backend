@@ -153,6 +153,7 @@
           });
 
           console.log("iCat",iCat)
+          $("#categoriesData").html(JSON.stringify(iCat))
 
           // ------------------------------
 
@@ -200,7 +201,7 @@
           }
 
           content = `
-          <tr>
+          <tr id="${'r_'+jd[i]._id}">
             <td>
               <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input large" id="customCheck3">
@@ -208,15 +209,134 @@
             </td>
 
             <td scope="col">${frameDate(jd[i].timestamp)}</td>
-            <td scope="col">${jd[i].amount}</td>
+            <td scope="col" id="${"amt_"+jd[i]._id}">${jd[i].amount}</td>
             <td scope="col">${jd[i].to}</td>
             <td scope="col">${jd[i].tnxType}</td>
             <td scope="col">${jd[i].remark}</td>
-            <td scope="col">${category}</td>
+            <td scope="col">
+              
+              <div onclick="edit(this.id)" id="${jd[i]._id}" class="btn btn-secondary btn-md" data-toggle="modal" data-target="#categoryEditModel">
+                <span class="glyphicon glyphicon-pencil"></span>  
+              </div>
+              ${category}
+            </td>
           </tr>
           `
           
           $("#tnx").append(content)
+        }
+      }
+
+      function edit(tnxId){
+        // alert(tnxId)
+        //put total amount value in categorize  modal
+        $("#tnxId").html(tnxId)
+        $("#categorizeModelTotalAmtVal").html( $("#amt_"+tnxId).html() )
+        $("#categorizeModelRemainingAmtVal").html('')
+
+        //update dropdown
+        updateDropDownWithCategories("categorizeModelDropdown1")
+        // $("#r_"+tnxId).addClass("bg-warning")
+
+        $("#categorizeParentDiv").html('')
+        editAddClick()
+      }
+
+      // $( document ).ready(function() {
+      //   $('#categoryEditModel').on('hidden.bs.modal', function () {
+      //     alert('modal closed')
+      //   });
+      // });
+
+      $(document).ready(function(){        
+        $("#categoryEditModel").on('hide.bs.modal', function(){
+          alert('The modal is about to be hidden.');
+        });
+      });
+
+      function editAddClick(){
+        dropdownId = "categorizeModelDropdown_"+Date.now()
+        $("#categorizeParentDiv").append(`
+        <div class="row col-sm-12">
+          <div class="col-sm-4">
+            <select id="${dropdownId}" class="form-control"> 
+
+            </select>
+          </div>
+
+          <div class="col-sm-4">
+            <input type="number" class="form-control" onkeyup="calculateRemaining()">
+          </div>
+        </div>
+        `)
+        updateDropDownWithCategories(dropdownId)
+      }
+
+      function calculateRemaining(){
+        var total = parseFloat($("#categorizeModelTotalAmtVal").html())
+        console.log('here',total)
+        sum = 0
+        $("#categorizeParentDiv").find('input').each(function(elem,vall){
+          console.log(vall)
+          sum += parseFloat($(vall).val())
+          console.log(sum)
+        })
+        $("#categorizeModelRemainingAmtVal").html( total - sum) 
+      }
+
+      async function updateCategorize(){
+        let i = 0
+        let key
+        let val
+        let splitList = []
+        $("#categorizeParentDiv").find('select,input').each(function(elem,vall){
+          if(i%2==0){
+            key = $(vall).val()
+          }else{
+            val = $(vall).val()
+            splitList.push({
+              "amount": val,
+              "categoryId": key
+            })
+          }
+          i++;
+        })
+
+        let tnxId = $("#tnxId").html()
+
+        let reqUpdateData = {
+          "categorizeInput": [
+            {
+              [tnxId]: splitList
+            }
+          ]
+        }
+
+        console.log(reqUpdateData)
+        console.log(JSON.stringify(reqUpdateData))
+
+        var resp = await $.ajax({
+            url: "http://localhost:3000/ssa/categorize", 
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            data:JSON.stringify(reqUpdateData)
+          })
+
+        console.log('D',resp)
+
+      }
+
+      function updateDropDownWithCategories(id){
+        iCatStr = $("#categoriesData").html()
+        iCat = JSON.parse(iCatStr)
+
+        $("#"+id).html()
+
+        for(var i in iCat){
+          $("#"+id).append(`
+            <option value="${i}" >${iCat[i].category}</option>
+          `)  
         }
       }
 
@@ -258,6 +378,65 @@
 
   </div>
 </div>
+
+<!-- Trigger the modal with a button -->
+<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#categoryEditModel">Open Modal</button>
+
+<!-- Modal -->
+<div id="categoryEditModel" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Categorize Transaction</h4>
+      </div>
+
+      <div class="modal-body">
+        <!-- <p>Some text in the modal.</p> -->
+        <div class="col-sm-4">
+          Amount : <span id="categorizeModelTotalAmtVal"></span>
+        </div>
+        <div class="col-sm-4">
+          Remaining : <span id="categorizeModelRemainingAmtVal"></span>
+        </div>
+
+      <div id="categorizeParentDiv">
+        <div class="row col-sm-12">
+          <div class="col-sm-4">
+            <select id="categorizeModelDropdown1" class="form-control"> 
+
+            </select>
+          </div>
+
+          <div class="col-sm-4">
+            <input type="number" class="form-control" onkeyup="calculateRemaining()">
+          </div>
+        </div>
+      </div>
+
+
+      <br/><br/><br/>
+      <div id="CategorizePlus" class="row col-sm-12">
+        <div>
+          <button class="glyphicon glyphicon-plus btn btn-secondary" onclick="editAddClick()"></button>
+        </div>
+      </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="updateCategorize()">Update</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+      <span id="tnxId" style="visibility:hidden;"></span>
+    </div>
+
+  </div>
+</div>
+
+<div id="categoriesData" style="height:10px; visibility:hidden; font:1px;"></div>
 
 </body>
 </html>
