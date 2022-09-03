@@ -23,28 +23,43 @@
   <title></title>
   
   <script>
-  $(document).ready(function() {
-    donutChart();
-  
-    $(window).resize(function() {
-      window.donutChart.redraw();
-    });
-  });
-  
-  function donutChart() {
-    window.donutChart = Morris.Donut({
-    element: 'donut-chart',
-    data: [
-      {label: "Download Sales", value: 50},
-      {label: "In-Store Sales", value: 25},
+
+  CD = [
       {label: "Download Sales", value: 50},
       {label: "In-Store Sales", value: 25},   
-      {label: "Download Sales", value: 5},
-      {label: "In-Store Sales", value: 15},
-      {label: "Download Sales", value: 20},
-      {label: "In-Store Sales", value: 22},   
-      {label: "In-Store Sales", value: 100},   
-    ],
+    ]
+
+  // $(document).ready(function() {
+  //   donutChartOld(CD);
+  
+  //   $(window).resize(function() {
+  //     window.donutChart.redraw();
+  //   });
+  // });
+  
+  function donutChartOld(CD1) {
+    window.donutChart = Morris.Donut({
+    element: 'donut-chart',
+    data: CD1,
+    resize: true,
+    redraw: true
+  });
+  }
+
+  function donutChart(D) {
+
+    ddata = []
+    for(var i in D){
+      console.log(i,D[i])
+      ddata.push({
+        label: i,
+        value: D[i]
+      })
+    }
+
+    window.donutChart = Morris.Donut({
+    element: 'donut-chart',
+    data1: ddata,
     resize: true,
     redraw: true
   });
@@ -76,7 +91,7 @@
       <h3>Menu 1</h3>
       <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
     </div>
-    <div id="menu2" class="tab-pane fade in active">
+    <div id="menu2" class="tab-pane fade">
       <h3>Fetch Transactions From Bank Account</h3>
       <!-- <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p> -->
       <br/><br/>
@@ -115,7 +130,7 @@
         </thead>
         <tbody id="tnx">
           <tr>
-            <td>
+            <!-- <td>
               <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input large" id="customCheck3">
               </div>
@@ -124,7 +139,7 @@
             <td scope="col">Article Name</td>
             <td scope="col">Author</td>
             <td scope="col">Words</td>
-            <td scope="col">Shares</td>
+            <td scope="col">Shares</td> -->
           </tr>
         </tbody>
         </table>
@@ -358,10 +373,31 @@
 
     </div>
 
-    <div id="menu3" class="tab-pane fade">
-      <h3>Menu 3</h3>
-      <p>Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
-    
+    <div id="menu3" class="tab-pane fade in active">
+      <h3>Choose time frame to get expanse Insights</h3>
+
+
+      <div class="row">
+        <div class="col-sm-3">
+          <span class=""col-sm-1 >From</span>
+          <input type="date" id="ifrom" class="form-control col-sm-2" value="2022-08-15" required/>
+        </div>
+        <div class="col-sm-3">
+          <span class=""col-sm-1 >To</span>
+          <input type="date" id="ito" class="form-control col-sm-2" value="2022-09-03" required/>
+        </div>
+        <div class="col-sm-3">
+          <br/>
+          <input type="button" id="ifetch" value="Fetch Transactions" class="btn btn-primary " onclick=""/>
+        </div>
+        <div class="col-sm-3">
+          .
+        </div>
+      </div>
+      
+      <br/><br/>
+  
+
 
       <!-- <section class="container-fluid">
       <div class="row">
@@ -373,6 +409,137 @@
       </div>
     </section> -->
 
+    <script>
+      $("#ifetch").click(async function(){
+          // console.log($("#from").val()+"T00:00:00")
+          var from = $("#ifrom").val()+"T00:00:00"
+          var to = $("#ito").val()+"T23:59:59"
+          console.log(from,to)
+
+          //Get all categories
+          var categories = await $.ajax({
+            url: "http://localhost:3000/ssa/category", 
+            type: "GET"
+          })
+
+          console.log('Cat',categories)
+
+          // ---------------- Index Categories
+
+          var iCat = {}
+          JSON.parse(categories).forEach(cat => {
+            
+            iCat[cat._id] = cat
+          });
+
+          console.log("iCat",iCat)
+          $("#categoriesData").html(JSON.stringify(iCat))
+
+          var getTnx = await $.ajax({
+              url: "http://localhost:3000/ssa/getTnx",
+              type: "GET",
+              data:{
+                from:from,
+                to:to
+              },
+            })
+
+          console.log('DD',getTnx)
+          let jsonTnx = JSON.parse(getTnx)
+          //get categoryWise frequency
+
+          catFreq = {}
+          console.log('**--11-#',catFreq)
+          Z = []
+          // debugger;
+
+          for(var i in jsonTnx){
+            console.log(i)
+            console.log(jsonTnx[i])
+            let tnx = jsonTnx[i]
+            console.log('**---#',catFreq)
+
+            if(tnx.categorized){
+
+              for(var j in tnx.categorized){
+                console.log(i,j,tnx.categorized[j])
+                let subDataX = iCat[tnx.categorized[j].categoryId]
+                console.log(subDataX,'---------<<')
+                let currentCat = subDataX.category
+                // let currentCat = subDataX._id
+                console.log('--|',currentCat,'__',catFreq)
+                if(catFreq[currentCat]){
+                  catFreq[currentCat] = 0.0
+                }
+                fValzz = parseFloat(tnx.categorized[j].amount)
+                catFreq[currentCat] += fValzz
+                console.log("---> ",currentCat,tnx.categorized[j].amount,"<----")
+                Z.push([currentCat,parseFloat(tnx.categorized[j].amount)])
+              }
+              console.log('++++++++++++')
+
+            }else{
+              if(!catFreq["other"]){
+                catFreq["other"] = 0.0
+              }
+
+              catFreq["other"] += parseFloat(tnx.amount)
+              console.log("---> ","other",parseFloat(tnx.amount),"<----")
+              Z.push(["other",tnx.amount])
+            }
+          }
+
+          console.log(catFreq)
+          console.log(Z)
+
+          Freq = {}
+
+          for(var i in Z){
+            if(!(Freq[Z[i][0]])){
+              Freq[Z[i][0]] = 0.0
+            }
+            Freq[Z[i][0]] += Z[i][1]
+          }
+
+          console.log(Freq)
+          
+          // donutChart(Freq);
+          DD = [
+      {label: "Download Sales", value: 50},
+      {label: "In-Store Sales", value: 25},
+      {label: "Download Sales", value: 50},
+      {label: "In-Store Sales", value: 25},   
+      {label: "Download Sales", value: 5},
+      {label: "In-Store Sales", value: 15},
+      {label: "Download Sales", value: 20},
+      {label: "In-Store Sales", value: 22},   
+      {label: "In-Store Sales", value: 100},   
+    ]
+
+    // window.donutChart.redraw();
+
+    ddata = []
+    for(var i in Freq){
+      console.log(i,Freq[i])
+      ddata.push({
+        label: i,
+        value: Freq[i]
+      })
+    }
+
+    console.log(ddata)
+
+    $(document).ready(function() {
+    donutChartOld(ddata);
+  
+    // $(window).resize(function() {
+    //   window.donutChart.redraw();
+    // });
+  });
+
+});
+    </script>
+
   </div>
    
 
@@ -380,7 +547,7 @@
 </div>
 
 <!-- Trigger the modal with a button -->
-<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#categoryEditModel">Open Modal</button>
+<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#categoryEditModel" style="visibility:hidden;"> Open Modal</button>
 
 <!-- Modal -->
 <div id="categoryEditModel" class="modal fade" role="dialog">
