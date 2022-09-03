@@ -1,5 +1,25 @@
 [
     {
+        "tnx_id": 1112201,
+        "user_id":"abc",
+        "timestamp": "2022-08-20T08:15:00",
+        "amount": 320,
+        "tnx_type": "debit",
+        "method": "UPI",
+        "remark": "no remark",
+        "to": "0435730943"
+    },
+    {
+        "tnx_id": 11101,
+        "user_id":"abc",
+        "timestamp": "2022-08-21T16:15:00",
+        "amount": 140,
+        "tnx_type": "debit",
+        "method": "UPI",
+        "remark": "rapido ride",
+        "to": "893475934785894"
+    },
+    {
         "tnx_id": 111,
         "user_id":"abc",
         "timestamp": "2022-09-02T10:00:00",

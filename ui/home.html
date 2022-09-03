@@ -37,7 +37,12 @@
   //   });
   // });
   
-  function donutChartOld(CD1) {
+function WRAP(CD1){
+  
+}
+
+ function donutChartOld(CD1) {
+    console.log("here")
     window.donutChartOld = Morris.Donut({
     element: 'donut-chart',
     data: CD1,
@@ -80,7 +85,8 @@
     <li><a data-toggle="tab" href="#menu1">Link Bank Account</a></li>
     <li><a data-toggle="tab" href="#menu2">Fetch Transactions</a></li>
     <li class="active"><a data-toggle="tab" href="#menu3">Insight</a></li>
-    <li><a data-toggle="tab" href="#menu4">Set Alerts</a></li>
+    <li><a data-toggle="tab" href="#menu4">Set Notification Policy</a></li>
+    <li><a data-toggle="tab" href="#menu5">Set Alerts</a></li>
   </ul>
 
   <div class="tab-content">
@@ -126,7 +132,8 @@
             <th scope="col">Transaction with</th>
             <th scope="col">Type</th>
             <th scope="col">Remark</th>
-            <th scope="col">Categorize</th>
+            <th scope="col">Category</th>
+            <th scope="col">.</th>
           </tr>
         </thead>
         <tbody id="tnx">
@@ -207,13 +214,31 @@
           console.log(jd[i].amount)
 
           category = "-"
+          moreThanOne = false
+          cats = []
           if(jd[i].categorized){
             if(jd[i].categorized.length == 1){
               console.log("*",jd[i].categorized[0].categoryId)
               if(iCat[jd[i].categorized[0].categoryId]){
                 category = iCat[jd[i].categorized[0].categoryId].category
               }
+            }else if(jd[i].categorized.length > 1){
+              moreThanOne = true
+              console.log('@@@@@@_',jd[i].categorized)
+              for(var j in jd[i].categorized){
+                console.log("############",j,jd[i].categorized[j])
+                console.log(iCat,iCat[jd[i].categorized[j].categoryId].category,)
+                cats.push([ 
+                  iCat[jd[i].categorized[j].categoryId].category])
+                  // ,jd[i].categorized[j].amount])
+              }
             }
+          }
+
+          if(moreThanOne){
+            category = cats.join(", ")
+          }else{
+
           }
 
           content = `
@@ -230,11 +255,12 @@
             <td scope="col">${jd[i].tnxType}</td>
             <td scope="col">${jd[i].remark}</td>
             <td scope="col">
-              
+              ${category}
+            </td>
+            <td scope="col">
               <div onclick="edit(this.id)" id="${jd[i]._id}" class="btn btn-secondary btn-md" data-toggle="modal" data-target="#categoryEditModel">
                 <span class="glyphicon glyphicon-pencil"></span>  
-              </div>
-              ${category}
+              </div>  
             </td>
           </tr>
           `
@@ -530,13 +556,17 @@
 
     console.log(ddata)
 
-    $(document).ready(function() {
-    donutChartOld(ddata);
+    // $(document).ready(function() {
+    // donutChartOld(ddata);
+
+    window.donutChartOld(ddata);
+
+    // donutChartOld.redraw();
   
     // $(window).resize(function() {
     //   window.donutChart.redraw();
     // });
-  });
+  // });
 
 });
     </script>
@@ -547,6 +577,10 @@
     <p></p>
   </div>
  
+  <div id="menu5" class="tab-pane fade">
+    <h3>Not Implemented</h3>
+    <p></p>
+  </div>
 
   </div>
 </div>
