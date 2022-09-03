@@ -12,7 +12,9 @@ StandardCatMap = {
     "rapido": "travel",
     "shirt": "outfit",
     "jeans": "outfit",
-    "supermarket": "groceries"
+    "supermarket": "groceries",
+    "water": "water",
+    "groceries": "groceries"
 }
 
 async function getCategoryIdBasedOnRemark(remark){
